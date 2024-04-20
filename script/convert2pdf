@@ -1,0 +1,14 @@
+#/bin/sh
+
+# This command should be called from the project route ( where image, script exist )
+
+# Create image directory if it doesn't exsit
+IMAGEDIR=image
+
+if [ ! -d ${IMAGEDIR} ]; then
+  mkdir ${IMAGEDIR}
+fi
+
+# Convert jpeg/png/gif/drawio file to the PDF file
+# The error messages are redirected to /dev/null
+ls image_src/*.jpg image_src/*.png image_src/*.gif image_src/*.drawio image_src/*.pdf 2>/dev/null | parallel  --results out script/process_of_conversion   {} image/{/.}.pdf

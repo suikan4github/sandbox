@@ -1,0 +1,41 @@
+#!/bin/sh
+# Convert jpeg/png/gif file to pdf only when the source is younger than destination
+
+# $0 : command scrift file name
+# $1 : source file path
+# $2 : destination file path
+
+
+# "convert" is a command of the ImageMagick
+# if the source is younger than destination or destination doesn't exist
+if [ $1 -nt $2 ] || [ ! -e $2 ]; then  
+    # Picture like jpg, png or gif? 
+    if [ "${1##*.}" = "jpg" ] || [ "${1##*.}" = "png" ] || [ "${1##*.}" = "gif" ]; then
+        convert $1 $2  # Convert it 
+    fi
+
+    # Drawing by drawio? 
+    # Crop the drawing with 10pt margin. 
+    if [ "${1##*.}" = "drawio" ]; then
+        # Delete ELECTRON_RUN_AS_NODE. This is set by VS CODE
+        # And known to make parameter passing bug. 
+        # To fix but, delete this env variable. 
+        unset ELECTRON_RUN_AS_NODE
+        # Run drawio to convert the file. We must detect the GUI environment
+        if [ -n "${XDG_SESSION_TYPE}" ] || [ "${XDG_SESSION_TYPE}" != "tty" ] ; then
+            # Create frame x frame buffer to run the drawio for none GUI environment. 
+            # Otherwise, it crashes.  
+            xvfb-run -a drawio -xf pdf --crop -b 10 -o  $2 $1 # Convert it
+        else
+            # In the GUI environment, we can just run the drawio. 
+            drawio -xf pdf --crop -b 10 -o  $2 $1 # Convert it
+        fi
+    fi
+
+    # Is PDF? 
+    if [ "${1##*.}" = "pdf" ]; then
+        cp $1 $2 # Convert it
+    fi
+
+
+fi

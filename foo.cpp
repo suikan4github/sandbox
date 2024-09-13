@@ -10,7 +10,7 @@ class foo {
 #if 1
 uint32_t ::foo::bar(unsigned int a) { return a; }
 #else
-uint32_t ::foo::bar(unsigned int a) { return a; }
+uint32_t foo::bar(unsigned int a) { return a; }
 #endif
 
 int ::foo::baz(int a) { return a; }

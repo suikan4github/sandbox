@@ -1,7 +1,7 @@
 [
 {
   "directory": "/home/seiichi/git/sandbox/build",
-  "command": "/usr/bin/g++ -g -std=c++11 -o CMakeFiles/foo.dir/foo.cpp.o -c /home/seiichi/git/sandbox/foo.cpp",
+  "command": "/usr/bin/clang++ -g -std=c++11 -o CMakeFiles/foo.dir/foo.cpp.o -c /home/seiichi/git/sandbox/foo.cpp",
   "file": "/home/seiichi/git/sandbox/foo.cpp",
   "output": "CMakeFiles/foo.dir/foo.cpp.o"
 }

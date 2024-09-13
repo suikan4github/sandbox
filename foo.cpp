@@ -3,17 +3,18 @@
 class foo {
  public:
   uint32_t bar(unsigned int a);
-  int baz(int a);
+  unsigned int baz(unsigned int a);
+  uint32_t qux(uint32_t a);
 };
 
-// When 1, fail to compiler by Clang 18.1.3 x86_64-pc-linux-gnu
-#if 1
+// Fail to compiler by Clang 18.1.3 x86_64-pc-linux-gnu
 uint32_t ::foo::bar(unsigned int a) { return a; }
-#else
-uint32_t foo::bar(unsigned int a) { return a; }
-#endif
 
-int ::foo::baz(int a) { return a; }
+// No problem if not using typdef.
+unsigned int ::foo::baz(unsigned int a) { return a; }
+
+// No problem if not using global scope resolution operator.
+uint32_t foo::qux(uint32_t a) { return a; }
 
 int main() {
   foo my_foo;

@@ -1,0 +1,4 @@
+<map id="rpp_driver::I2cMaster" name="rpp_driver::I2cMaster">
+<area shape="rect" id="node1" title="I2C Master controller class." alt="" coords="35,79,195,104"/>
+<area shape="rect" id="node2" href="$classrpp__driver_1_1I2cMasterInterface.html" title="Interface type to allow the GoogleTest without depending to RasPi." alt="" coords="5,5,224,31"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="src/i2c/i2cmaster.hpp" name="src/i2c/i2cmaster.hpp">
+<area shape="rect" id="node1" title="I2C Master Controller." alt="" coords="176,5,336,31"/>
+<area shape="rect" id="node2" href="$adau1361lower_8hpp.html" title="Lower class for the ADAU1361." alt="" coords="77,79,291,104"/>
+<area shape="rect" id="node4" href="$umbadau1361lower_8hpp.html" title="Lower class for the UMB&#45;ADAU1361A." alt="" coords="208,152,451,177"/>
+<area shape="rect" id="node3" href="$adau1361_8hpp.html" title="ADAU1361A CODEC Control." alt="" coords="5,152,184,177"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="src/codec/adau1361.hpp" name="src/codec/adau1361.hpp">
+<area shape="rect" id="node1" title="ADAU1361A CODEC Control." alt="" coords="67,5,245,31"/>
+<area shape="rect" id="node2" href="$i2cmasterinterface_8hpp.html" title="I2C master Interface." alt="" coords="5,225,179,251"/>
+<area shape="rect" id="node5" href="$adau1361lower_8hpp.html" title="Lower class for the ADAU1361." alt="" coords="152,79,301,104"/>
+<area shape="rect" id="node3" title=" " alt="" coords="230,299,301,324"/>
+<area shape="rect" id="node4" title=" " alt="" coords="97,299,167,324"/>
+<area shape="rect" id="node6" href="$i2cmaster_8hpp.html" title="I2C Master Controller." alt="" coords="200,152,315,177"/>
+<area shape="rect" id="node7" href="$sdkwrapper_8hpp.html" title="SDK wrapper class." alt="" coords="203,225,328,251"/>
+</map>

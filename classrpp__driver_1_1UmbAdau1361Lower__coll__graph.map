@@ -1,0 +1,5 @@
+<map id="rpp_driver::UmbAdau1361Lower" name="rpp_driver::UmbAdau1361Lower">
+<area shape="rect" id="node1" title="lower part of the Adau1361 CODEC controller class." alt="" coords="5,168,236,193"/>
+<area shape="rect" id="node2" href="$classrpp__driver_1_1Adau1361Lower.html" title="lower part of the Adau1361 CODEC controller class." alt="" coords="21,93,221,119"/>
+<area shape="rect" id="node3" href="$classrpp__driver_1_1I2cMasterInterface.html" title="Interface type to allow the GoogleTest without depending to RasPi." alt="" coords="11,5,230,31"/>
+</map>

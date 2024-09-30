@@ -20,4 +20,4 @@ jobs:
           html-out: coverage.html
           html-details: true
           coveralls-send: true
-          excludes: build/*
+          excludes: [build/*, test/*, src/*/*.hpp]

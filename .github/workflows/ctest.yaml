@@ -39,51 +39,33 @@ jobs:
           submodules: true
 
       # Configuration for GCC
-      - name: Configuration for gcc
+      - name: Configuration and build for gcc
         if:  matrix.compiler == 'gcc'
-        run: |
-          echo Runs-on ${{matrix.os}}, Build with ${{matrix.compiler}}
-          mkdir build
-          cd build
-          cmake ..  -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc
+        uses: threeal/cmake-action@v2.0.0
+        with: 
+          c-compiler: gcc
+          cxx-compiler: g++
+          build-args: --config ${{ matrix.build }} 
 
       # Configuration for Clang
-      - name: Configuration for clang
+      - name: Configuration for and build clang
         if:  matrix.compiler == 'clang'
-        run: |
-          echo Runs-on ${{matrix.os}}, Build with ${{matrix.compiler}}
-          mkdir build
-          cd build
-          cmake ..  -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+        uses: threeal/cmake-action@v2.0.0
+        with: 
+          c-compiler: clang
+          cxx-compiler: clang++
+          build-args: --config ${{ matrix.build }} 
 
       # Configuration for MSVC
-      - name: Configuration for msvc
+      - name: Configuration for and build msvc
         if:  matrix.compiler == 'msvc'
-        run: |
-          echo "Runs-on ${{matrix.os}}, Build with ${{matrix.compiler}}"
-          mkdir build
-          cd build
-          cmake ..  -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl
-
-      # Build for Linux
-      - name: Build for Linux
-        if:  matrix.os == 'ubuntu-latest'
-        run: |
-          echo Runs-on ${{matrix.os}}, ${{matrix.build}} build
-          cd build
-          cmake --build . --target all --config ${{ matrix.build }} --clean-first -j4
-
-      # Build for Windows
-      - name: Build for Windows
-        if:  matrix.os == 'windows-latest' 
-        run: |
-          echo "Runs-on ${{matrix.os}}, ${{matrix.build}} build"
-          cd build
-          cmake --build . --target all_build --config ${{ matrix.build }} --clean-first -j4
+        uses: threeal/cmake-action@v2.0.0
+        with: 
+          c-compiler: cl
+          cxx-compiler: cl
+          build-args: --config ${{ matrix.build }} 
 
       - name: Test
-        run:  |
-          cd build
-          ctest --rerun-failed --output-on-failure -j 4
+        uses: threeal/ctest-action@v1.1.0
 
 

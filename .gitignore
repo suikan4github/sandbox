@@ -31,9 +31,8 @@
 *.out
 *.app
 
-# Doxygen
-*.bak
-
-# Directory
+# Local files
 build/
+.vscode/
 html/
+*.bak

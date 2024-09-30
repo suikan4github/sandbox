@@ -1,0 +1,30 @@
+# Generate doxygen file into docs/html directory. 
+# Then, push it to the gh-pages contents. 
+# The project needs to configure to upload the gh-pages branch. 
+# Refer https://github.com/DenverCoder1/doxygen-github-pages-action
+
+# PAT is allowed only to the "Contents"
+name: Doxygen GitHub Pages Deploy Action
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  CTest:
+    uses: ./.github/workflows/ctest.yaml 
+  Deploy-Pages:
+    needs: CTest
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: DenverCoder1/doxygen-github-pages-action@v2.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
+          folder: docs/html
+          config_file: Doxyfile

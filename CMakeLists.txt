@@ -1,49 +1,42 @@
-# CMake 3.15 or newer is requried because of CMP0091.
-cmake_minimum_required(VERSION "3.15")
+# To use FetchContent, we need CMake 3.14 or newer. 
+cmake_minimum_required(VERSION 3.14)
 
-# The CMake compatibility flag for MSVC runtime library flag. New in 3.15.  Must set "NEW"
-cmake_policy(SET CMP0091 "NEW")   
-# Enforce the  /MT or /MTd as link option for MS Visual Studio C++
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-
-
-#----------------------------------------------------------------------------
-# Parameters inside project
-project("template_application")
-
-# Compiler option
-# GoogleTest requirest C++11 or later
-set(CMAKE_CXX_STANDARD "11")
-set(CMAKE_CXX_STANDARD_REQUIRED "ON")
-set(CMAKE_CXX_EXTENSIONS "OFF")
+  # GoogleTest requires at least C++14
+  # To use std::size() and __has_include, we need c++17
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
 
 
-#----------------------------------------------------------------------------
-# Do not edit the lines below 
+# If the configuratopm target is Windows or Unix, this project
+# will be build as a test program of the rpp_driver. 
 
-# Executable name
-set(EXECUTABLE_NAME ${PROJECT_NAME})
+# If the configuration target is not above, this porject 
+# will be build as a rpp_driver library. 
 
-# Test executable and library name
-set(TEST_EXECUTABLE_NAME "test_${PROJECT_NAME}")
-set(TEST_LIBRARY_NAME "${PROJECT_NAME}_for_test")
+if((${WIN32}) OR (${UNIX})) # Is Target Windows or Unix? 
 
-# Enable CTest
-# This command automatically run the enable_test() command.
-# And the CMake specification requires to place the enable_test() at the
-# root of the project, to run the ctest correctly. 
-# Thus, place this command at the root of project.
-include("CTest")
+  # Redefine project for testing.
+  project(test_rpp_driver)
 
-# Using thread inside application
-find_package("Threads" REQUIRED)
+  # Enable test to let the VS code find the test.
+  include(CTest)
+  enable_testing()
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include("CPack")
+  include(FetchContent)
+  FetchContent_Declare(
+    googletest
+  	GIT_REPOSITORY "https://github.com/google/googletest.git"
+  	GIT_TAG "v1.15.2"
+    )
+  # For Windows: Prevent overriding the parent project's compiler/linker settings
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googletest)
 
-# Subdirectories
-add_subdirectory("src")
-add_subdirectory("test")
-add_subdirectory("doc")
+  add_subdirectory(src)
+  add_subdirectory(test)
 
+else()  # Is target RasPi Pico? 
+  add_subdirectory(src)
+
+endif()

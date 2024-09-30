@@ -1,0 +1,89 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CTest_on_push_and_pull_request
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  workflow_call:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains build matrix
+  CTest:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build: [Release, Debug]
+        compiler: [gcc, clang, msvc]
+        exclude:
+          - {os: ubuntu-latest, compiler: msvc}
+          - {os: windows-latest, compiler: gcc}
+          - {os: windows-latest, compiler: clang}
+
+    # Test on specified OS
+    runs-on: ${{ matrix.os }}
+
+    # Configure - Build - Test
+    steps:
+      # Checks-out repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4.1.7
+        with:
+          submodules: true
+
+      # Configuration for GCC
+      - name: Configuration for gcc
+        if:  matrix.compiler == 'gcc'
+        run: |
+          echo Runs-on ${{matrix.os}}, Build with ${{matrix.compiler}}
+          mkdir build
+          cd build
+          cmake ..  -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc
+
+      # Configuration for Clang
+      - name: Configuration for clang
+        if:  matrix.compiler == 'clang'
+        run: |
+          echo Runs-on ${{matrix.os}}, Build with ${{matrix.compiler}}
+          mkdir build
+          cd build
+          cmake ..  -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+
+      # Configuration for MSVC
+      - name: Configuration for msvc
+        if:  matrix.compiler == 'msvc'
+        run: |
+          echo "Runs-on ${{matrix.os}}, Build with ${{matrix.compiler}}"
+          mkdir build
+          cd build
+          cmake ..  -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER=cl
+
+      # Build for Linux
+      - name: Build for Linux
+        if:  matrix.os == 'ubuntu-latest'
+        run: |
+          echo Runs-on ${{matrix.os}}, ${{matrix.build}} build
+          cd build
+          cmake --build . --target all --config ${{ matrix.build }} --clean-first -j4
+
+      # Build for Windows
+      - name: Build for Windows
+        if:  matrix.os == 'windows-latest' 
+        run: |
+          echo "Runs-on ${{matrix.os}}, ${{matrix.build}} build"
+          cd build
+          cmake --build . --target all_build --config ${{ matrix.build }} --clean-first -j4
+
+      - name: Test
+        run:  |
+          cd build
+          ctest --rerun-failed --output-on-failure -j 4
+
+

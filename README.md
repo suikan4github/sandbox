@@ -1,130 +1,97 @@
-# template_application
-A template application for C++ with CMake and GoogleTest
-## Description
-A CMake file template and sample C++ application which allows unit test by GoogleTest. This template application is :
-- Able to collaborate with [Visual Studio CODE](https://azure.microsoft.com/ja-jp/products/visual-studio-code/) editor.
-- Build in [GoogleTest](https://github.com/google/googletest) which is downloaded automatically.
-- "src" directory for application source code.
-- "test" directory for unit tests. 
-- std::thread aware. 
-- Generate Gcov data files during test ( except Windows platform )
-- Tested: 
-    - Ubuntu 20.04  with GCC.
-    - Windows 11 with Visual Studio C++ compiler.
-    - WSL2 with VS CODE remote server.
-- Automatically tested by GitHub Actions.
-    - linux-latest, Debug (With gcovr report)
-    - linux-latest, Release
-    - windows-latest, Debug
-    - windows-latest, Release
-    
-## Screenshot
-![](image/screenshot.png)
-## Requirement
-### Ubuntu
-- Ubuntu 20.04
-- VS Code
-- CMake 3.15 or newer
-- Python 3
-- g++
+# Raspberry Pi Pico Driver class collection
+A Collection of the Raspberry Pi [Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/)/[Pico2](https://www.raspberrypi.com/products/raspberry-pi-pico-2/) classes. Also, a [SDK API](https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#group_sm_config_1gaed7a6e7dc4f1979c7c62e4773df8c79b) wrapper class is provided. 
+
+An online [HTML documentation](https://suikan4github.github.io/rpp_driver/) is available for the details.  
+
+# Details
+This class collection ( or class library ) encapsule the certain data inside class. And it also allows you to use the dependency-injection inside your project. So, you can test your code with [Google Test](https://github.com/google/googletest) before testing on the target hardware. 
+
+These classes are provided in this version. 
+
+| Class                           | Header file          | Description |
+|---------------------------------|----                  |----------------------------- |
+| ::rpp_driver::SdkWrapper        | sdkwrapper.hpp       | Wrapper class of Pico SDK    |
+| ::rpp_driver::GpioBasic         | gpiobasic.hpp        | Basic GPIO controller        |
+| ::rpp_driver::I2cMaster         | i2cmaster.hpp        | I2C Master controller        |
+| ::rpp_driver::I2sSlaveDuplex    | i2sslaveduplex.hpp   | Polling based PIO I2S driver |
+| ::rpp_driver::Adau1361          | adau1361.hpp         | Audio CODEC driver           |
+| ::rpp_driver::UmbAdau1361Lower  | umbadau1361lower.hpp | CODEC lower driver dedicated to UMB-ADAU1361-A board |
 
 
-### Windows
-- Windows 10 or 11
-- VS Code
-- CMake 3.15 or newer
-- Python 3
-- Microsoft Visual C++ compiler 
+## How to obtain this project
 
-### WSL2
-- Windows 10 or 11
-- VS Code with [Remote Development extension pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.vscode-remote-extensionpack)
-- CMake 3.15 or newer
-- Python 3
-- g++
-- ca-certificates
+The newest copy of this project is found in the [GitHub repository](https://github.com/suikan4github/rpp_driver). 
 
-
-## Usage
-### Visual Studio CODE
-Run the followings command inside this directory ( Where README.md exists) to start the VS CODE: 
-```Shell
-code .
+Run the following command to obtain this project from CLI:
+```sh
+git clone --recursive https://github.com/suikan4github/rpp_driver.git
 ```
-Inside VS CODE, Type Ctrl-Shift-P to show the command pallet. And then, execute following command :
-```
-CMake: Configure
-```
-Now, you can build, run the executable and Ctest from the status bar of the VS CODE.
 
-![](image/statusbar.png)
-### Command line
-Run the followings commands inside this directory ( Where README.md exists) : 
-```Shell
+## How to obtain the sample programs
+
+The newest copy of the sample program project is found in the [GitHub repository](https://github.com/suikan4github/rpp_driver-sample). 
+
+Run the following command to obtain the sample from CLI:
+```sh
+git clone --recursive https://github.com/suikan4github/rpp_driver-sample.git
+```
+
+## Sample codes
+You can obtain sample applications from [rpp-driver_sample](https://github.com/suikan4github/rpp_driver-sample) repository.
+
+
+# Tools and building
+## Installing tool
+To build the samples or test, you need to install the build tools. 
+The installation of Ubuntu is : 
+
+```sh
+apt-get -y update
+apt-get -y install build-essential cmake ninja-build git doxygen
+apt-get -y install gcc-arm-none-eabi libnewlib-arm-none-eabi
+apt-get -y install doxygen graphviz
+```
+
+## Building the tests
+The driver classes are tested by GoogleTest and fff. Follow the procedure to build the tests. 
+
+From the repository root ( where this README.md stays), run the following commands. 
+```sh
 mkdir build
-cd build
-cmake ..
-cmake --build .
-```
-The executables are stored in the subdirectories: 
-- build/src
-- build/test
-
-In the case of MS Visual Studio C, the executables are located under the build configuration subdirectories like :
-- build/src/Debug, build/src/Release
-- build/test/Debug, build/test/Release
-
-To run the Ctest, type :
-```Shell
-ctest
+cmake -B build -S . -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ 
+cmake --build build --config Debug --target all
 ```
 
-## Install
- 
-### Ubuntu
-Run followings on the shell. 
-```Shell
-sudo snap install code --classic
-sudo apt-get install build-essential cmake doxygen
+## Building document
+An API document is provided as HTML files. 
+To obtain it, run doxygen at the project root ( where the README.md exists).
+
+```sh
+doxygen
 ```
-- Note 1: After installing VS CODE, install the [C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack) and the [Gcov Viewer extension](https://marketplace.visualstudio.com/items?itemName=JacquesLucke.gcov-viewer) to the VS CODE.
-### Windows
 
-Run followings on the PowerShell or Command . 
-```PowerShell
-winget install Microsoft.VisualStudioCode -e
-winget install Kitware.CMake -e
-winget install Microsoft.VisualStudio.2022.Community -e
-winget install Git.Git -e
-winget install Python.Python.3 -e
-winget install doxygen -e
-winget install graphviz -e
+The documentation will be generated under the docs/html/ subdirectory. 
+
+# Integration to your RasPi Pico project
+To use the rpp_driver, as a first step, you need to add following lines into your CMakeLists.txt. 
+
 ```
-- Note 1: After installing VS CODE, install the [C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack) and the [Gcov Viewer extension](https://marketplace.visualstudio.com/items?itemName=JacquesLucke.gcov-viewer) to the VS CODE.
-- Note 2: The above winget install the CMake installer only. Run the CMake once and complete the installation.
-- Note 3: The above wget install the VisualStudio launcher only. [Install the C++ workload](https://docs.microsoft.com/en-us/cpp/build/vscpp-step-0-installation?view=msvc-170) after winget installation.
-
-After the installation, set the PATH environment variable for CMake, Visual Studio, Git and Graphviz. 
-
-### WSL2
-
-Run followings on the PowerShell or Command to install the Visual Studio CODE editor. 
-```PowerShell
-winget install Microsoft.VisualStudioCode -e
+add_subdirectory(rpp_driver)
 ```
-Then, run followings on the Ubuntu shell. 
-```Shell
-sudo apt-get install build-essential cmake doxygen ca-certificates
+
 ```
-- Note 1: After installing VS CODE, install the [C++ Extension Pack](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools-extension-pack) and the [Gcov Viewer extension](https://marketplace.visualstudio.com/items?itemName=JacquesLucke.gcov-viewer) to the VS CODE.
-
-
-## Customize the project
-To change the project name, edit the [CMakeLists.txt](CMakeLists.txt) and change following line : 
-```CMake
-project("template_application")
+target_link_libraries(${PROJECT_NAME}  pico_stdlib 
+                                        hardware_i2c
+                                        hardware_pio
+                                        rpp_driver)
 ```
-The quoted string is the project name. 
 
-## License
-This project is shared with the [MIT License](LICENSE). 
+Note : Whichever you use PIO/I2C or not, you need to link these libraries. 
+
+By linking library, the include path for the include files are set automatically. 
+
+# License
+This project is provided under [MIT License](LICENSE). 
+
+# Copyright
+@author Seiichi Horie

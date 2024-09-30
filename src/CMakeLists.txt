@@ -1,18 +1,20 @@
-# Project Parameters.
-# File name of main()
-set(MAIN_FILE_PATTERN ".*/main.cpp$")
+cmake_minimum_required(VERSION 3.13)
 
-#----------------------------------------------------------------------------
-# Do not edit the lines below 
+# Create a rpp_driver library. 
+# These declaration works for both UNIX/Win and bare metal. 
 
-# List up all source files including main.cpp
-file(GLOB ALL_SRCS "*.cpp")
+add_library(rpp_driver INTERFACE)
 
-add_executable(${EXECUTABLE_NAME} ${ALL_SRCS})
+# Win/Unix specific option. 
+if((${WIN32}) OR (${UNIX}))    
+        target_compile_options(rpp_driver
+                                    INTERFACE
+                                    --coverage
+                                    )
+endif()
 
-    # Add pthread library to support std::thread
-    # In the case of MSVC, this is not required.
-    if (NOT(MSVC))
-        target_link_libraries(${EXECUTABLE_NAME} "pthread")
-    endif(NOT(MSVC))
-
+add_subdirectory(codec)
+add_subdirectory(i2c)
+add_subdirectory(gpio)
+add_subdirectory(i2s)
+add_subdirectory(sdk) # Wrapper class for RasPi Pico SDK. 

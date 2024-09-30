@@ -1,0 +1,107 @@
+;
+;  RP2040 / RP2035 PIO program for the duplex I2S transfer in slave mode. 
+;
+;
+; The I2S signal wave form is depicted below : 
+;
+;                  ┐　┌─┐　┌─┐　┌─┐　┌─┐　
+;             BCLK └─┘　└─┘　└─┘　└─┘　└─
+;                  ┐
+;               WS └─────────────────
+;
+;         BIT SLOT │　００│　３１│　３０　│　２９│　
+;
+; The rising edge of the BCLK is the sampling edge of the I2S. 
+; So we can call the period from a falling edge to the next falling
+; edge as a "BIT SLOT". 
+;
+; Per definition of I2S standard, the first bit slot after the
+; falling edge of the WS is the last bit slot (00) of the previous 
+; right channel. 
+;
+; In the program below, we have 3 sync loop before the actual data
+; transfer. These sync loops guarantees the data integrity for 
+; any timing of the program start.  
+;
+; Pin mappings : 
+; - Out pin 0 : Signal Data out. 
+; - In pin 0 : Signal Data in. 
+; - In pin 1 : BCLK in.
+; - In pin 2 : WS. Configured as JMP pin. 
+
+.pio_version 0              ; only requires PIO version 0
+
+.program i2s_slave_duplex   ; Program entry point. 
+
+                            ; The following 3 loops avoid the trouble from the timing problem. 
+                            ; The beginning of the PIO state machine program is not synchronized
+                            ; with the running I2S master signal.
+                            ; As a result, the PIO program may start :
+                            ; - At the middle of Left ch. 
+                            ; - At the right ch.
+                            ; - At the boundary of left and right ch.
+                            ; These timing may cause the LR swap or noise issue. Also other
+                            ; unknown issue may cause. 
+                            ; To avoid this trouble, the following 3 loops guarantee the 
+                            ; data transfer start from the precisely beginning of left ch.  
+
+sync2_loop:                 ; Loop to wait for left ch
+        wait 0 pin 1        ; Capture falling edge of BCLK(Sync to the driving edge of BCLK). 
+        wait 1 pin 1        ; Capture rising edge of BCLK(Sync to the Sampling edge of BCLK). 
+    jmp pin sync2_loop      ; repeat while WS == 1.
+
+sync1_loop:                 ; Loop to wait for right ch. 
+        wait 0 pin 1        ; Capture falling edge of BCLK(Sync to the driving edge of BCLK). 
+        wait 1 pin 1        ; Capture rising edge of BCLK(Sync to the Sampling edge of BCLK). 
+        jmp pin sync0_loop  ; Exit loop if WS == 1
+    jmp sync1_loop          ; repeat while WS == 0. 
+ 
+sync0_loop:                 ; We are fully sync with Right channel here. 
+        wait 0 pin 1        ; Capture falling edge of BCLK(Sync to the driving edge of BCLK). 
+        wait 1 pin 1        ; Capture rising edge of BCLK(Sync to the Sampling edge of BCLK). 
+    jmp pin sync0_loop      ; repeat while WS == 1.
+ 
+
+                            ; In the following transfer loop, the pull instructions are 
+                            ; blocking operation. This allows small under under flow from the 
+                            ; main program.  n the other words, delay of the TX data is 
+                            ; allowed ( alternatively, we may have some noise) and transfer 
+                            ; process recovers in next cycle.
+                            ; The push instructions are not blocking because the 
+                            ; timing of these instruction is critical and non-recoverable.   
+
+.wrap_target                ; Beginning of stereo data transfer. WS is 0 at here. 
+                            ; Transfer Left ch
+    pull block              ; We have empty OSR. Load left ch data. 
+
+left_loop:                  ; Loop to transfer left ch. 
+        wait 0 pin 1        ; Capture falling edge of BCLK(Sync to the driving edge of BCLK). 
+        out pins, 1         ; Output 1 bit to DAC. 
+        wait 1 pin 1        ; Capture rising edge of BCLK(Sync to the Sampling edge of BCLK). 
+        in pins, 1          ; Input 1 bit from ADC.
+        jmp pin left_exit   ; Exit loop if WS == 1
+    jmp left_loop           ; repeat while WS == 0. 
+
+left_exit:                  ; Tearing off the shift registers. WS is 1 at here. 
+    push noblock            ; We have filled ISR. Push ISR to store right data. 
+
+                            ; Transfer right ch
+    pull block              ; We have empty OSR. Load right ch data. 
+
+right_loop:                 ; Loop to transfer right ch
+        wait 0 pin 1        ; Capture falling edge of BCLK(Sync to the driving edge of BCLK). 
+        out pins, 1         ; Output 1 bit to DAC. 
+        wait 1 pin 1        ; Capture rising edge of BCLK(Sync to the Sampling edge of BCLK). 
+        in pins, 1          ; Input 1 bit from ADC.
+    jmp pin right_loop      ; repeat while WS == 1.
+
+                            ; Tearing off the shift register. 
+    push noblock            ; We have filled ISR. Push ISR to store left data.
+.wrap
+
+; This program takes 5 cycles for the second half of a bit slot. 
+; This happens when program wraps. So, for the entire clock cycle, 
+; we need 10 cycle. 
+;
+; For the 96kHz I2S stereo ( 32bit word), the BCLK is 6MHz. As a result, 
+; we need abut 60MHz (96kHz * 2 * 32 *10) for PIO clock. 

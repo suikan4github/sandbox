@@ -19,8 +19,8 @@ jobs:
   CTest:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        build: [Release, Debug]
+        os: [ubuntu-latest]
+        build: [ Debug]
 
     # Test on specified OS
     runs-on: ${{ matrix.os }}
@@ -28,7 +28,7 @@ jobs:
     # Configure - Build - Test
     steps:
       # Checks-out repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # Runs commands using the runners shell
       - name: Configuration

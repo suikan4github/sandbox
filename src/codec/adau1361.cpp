@@ -4,6 +4,9 @@
  *  Created on: 2018/05/11
  *      Author: Seiichi "Suikan" Horie
  */
+// This pragma promote the switch-enum warning to error.
+// Hope this is ignored by MSVC.
+#pragma GCC diagnostic error "-Wswitch-enum"
 
 #include "adau1361.hpp"
 
@@ -87,13 +90,14 @@ void ::rpp_driver::Adau1361::SetGain(CodecChannel channel, float left_gain,
       adau1361_lower_.SetLineOutputGain(
           line_output_left_gain_, line_output_right_gain_, line_output_mute_);
       break;
-
-    case HeadphoneOutput:
-      hp_output_left_gain_ = left_gain;
-      hp_output_right_gain_ = right_gain;
-      adau1361_lower_.SetHpOutputGain(hp_output_left_gain_,
-                                      hp_output_right_gain_, hp_output_mute_);
-      break;
+      /*
+          case HeadphoneOutput:
+            hp_output_left_gain_ = left_gain;
+            hp_output_right_gain_ = right_gain;
+            adau1361_lower_.SetHpOutputGain(hp_output_left_gain_,
+                                            hp_output_right_gain_,
+         hp_output_mute_); break;
+         */
     default:
       assert(false);
       break;

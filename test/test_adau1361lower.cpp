@@ -1035,7 +1035,7 @@ TEST_F(Adau1361LowerDeathTest, ConfigurePll_48_wrong_master_clock) {
     const unsigned int fs = 48000;
     // check the assertion for bad mclock.
 #ifndef NDEBUG
-    ASSERT_DEATH(codec_lower_->ConfigurePll(fs, mclock),
+    EXPECT_DEATH(codec_lower_->ConfigurePll(fs, mclock),
                  "Wrong Master Clock with Fs 48kHz Series");
 #endif
   }

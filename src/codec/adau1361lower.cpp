@@ -266,7 +266,10 @@ void ::rpp_driver::Adau1361Lower::ConfigurePll(unsigned int fs,
       }
 
       default:
-        assert(false && "Wrong Master Clock with Fs 48kHz Series");
+        // clang-format off
+        assert(false && 
+                "Wrong Master Clock with Fs 48kHz Series");
+        // clang-format on
     }
 
   } else if (fs == 22050 || fs == 44100 || fs == 88200) {

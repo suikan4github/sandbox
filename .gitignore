@@ -31,6 +31,9 @@
 *.out
 *.app
 
-# CMake
+# Doxygen
+*.bak
+
+# Directory
 build/
-pico-env-easy.code-workspace
+html/

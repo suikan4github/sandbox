@@ -32,7 +32,17 @@
 // #include <hardware/watchdog.h>
 // #include <hardware/xosc.h>
 
+#include <assert.h>
+#include <stdint.h>
+
 #include "pico/stdlib.h"
+// --------------------------------------------------
+extern "C" void sleep_ms(uint32_t ms);
+__attribute__((weak)) void sleep_ms(uint32_t ms) {
+  assert(false &&
+         "Error : The pico_time library is missing in the link phase.");
+}
+// --------------------------------------------------
 
 int main() {
 #ifndef PICO_DEFAULT_LED_PIN

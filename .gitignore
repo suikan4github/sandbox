@@ -31,8 +31,6 @@
 *.out
 *.app
 
-# Local files
+# CMake
 build/
-.vscode/
-html/
-*.bak
+pico-env-easy.code-workspace

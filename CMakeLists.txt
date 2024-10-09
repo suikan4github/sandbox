@@ -48,7 +48,7 @@ pico_sdk_init()
 # https://github.com/raspberrypi/pico-examples/blob/master/blink/CMakeLists.txt
 
 add_executable(blink
-        blink.c
+        blink.cpp
         )
 
 # pull in common dependencies

@@ -1,9 +1,8 @@
-#include "foo.hpp"
+#include <iostream>
 
-#include <assert.h>
-
-double Calc::sqrt(double param) {
-  assert(param >= 0);
-
-  return std::sqrt(param);
+#if !DEFINE_AT_MAIN_CPP
+__attribute((weak)) void foo(void) {
+  std::cout << "Message from WEAK foo()" << std::endl;
 }
+
+#endif

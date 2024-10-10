@@ -10,6 +10,9 @@ file(GLOB ALL_SRCS "*.cpp")
 
 add_executable(${EXECUTABLE_NAME} ${ALL_SRCS})
 
+    target_compile_options(${EXECUTABLE_NAME} PUBLIC
+                       -DDEFINE_AT_MAIN_CPP=false
+    )
     # Add pthread library to support std::thread
     # In the case of MSVC, this is not required.
     if (NOT(MSVC))

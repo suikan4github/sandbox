@@ -18,3 +18,4 @@ If the DEFINE_AT_MAIN_CPP is set to true, the weakly bound function is included 
 If the DEFINE_AT_MAIN_CPP is set to false, the weakly bound function is defined inside foo.cpp. In this case, no compile error occurs because the incline function is not included from foo.cpp. 
 
 Test
+Test
